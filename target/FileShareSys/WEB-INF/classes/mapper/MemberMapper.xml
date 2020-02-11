@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhit.dao.MemberMapper">
+  <resultMap id="BaseResultMap" type="com.hhit.bean.Member">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="member_id" jdbcType="VARCHAR" property="memberId" />
+    <result column="member_name" jdbcType="VARCHAR" property="memberName" />
+    <result column="member_password" jdbcType="VARCHAR" property="memberPassword" />
+    <result column="true_name" jdbcType="VARCHAR" property="trueName" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="head_img" jdbcType="VARCHAR" property="headImg" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, member_id, member_name, member_password, true_name, sex, email, head_img
+  </sql>
+
+  <!--用户登录-->
+  <select id="memberLogin" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_member
+    where member_name = #{memberName} and member_password = #{memberPassword}
+  </select>
+
+  <!--用户搜索-->
+  <select id="getAllWithCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_member
+    where member_name like CONCAT('%',#{condition},'%')
+  </select>
+
+  <!--验证用户名-->
+  <select id="checkMemberName" resultType="java.lang.Long">
+    select count(*)
+    from tbl_member
+    where member_name = #{memberName}
+  </select>
+
+  <select id="selectByExample" parameterType="com.hhit.bean.MemberExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_member
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_member
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hhit.bean.MemberExample">
+    delete from tbl_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hhit.bean.Member">
+    insert into tbl_member (id, member_id, member_name, 
+      member_password, true_name, sex, 
+      email, head_img)
+    values (#{id,jdbcType=INTEGER}, #{memberId,jdbcType=VARCHAR}, #{memberName,jdbcType=VARCHAR}, 
+      #{memberPassword,jdbcType=VARCHAR}, #{trueName,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{headImg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hhit.bean.Member">
+    insert into tbl_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="memberName != null">
+        member_name,
+      </if>
+      <if test="memberPassword != null">
+        member_password,
+      </if>
+      <if test="trueName != null">
+        true_name,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="headImg != null">
+        head_img,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null">
+        #{memberId,jdbcType=VARCHAR},
+      </if>
+      <if test="memberName != null">
+        #{memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPassword != null">
+        #{memberPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="trueName != null">
+        #{trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="headImg != null">
+        #{headImg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hhit.bean.MemberExample" resultType="java.lang.Long">
+    select count(*) from tbl_member
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_member
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.memberId != null">
+        member_id = #{record.memberId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.memberName != null">
+        member_name = #{record.memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.memberPassword != null">
+        member_password = #{record.memberPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trueName != null">
+        true_name = #{record.trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sex != null">
+        sex = #{record.sex,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null">
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.headImg != null">
+        head_img = #{record.headImg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_member
+    set id = #{record.id,jdbcType=INTEGER},
+      member_id = #{record.memberId,jdbcType=VARCHAR},
+      member_name = #{record.memberName,jdbcType=VARCHAR},
+      member_password = #{record.memberPassword,jdbcType=VARCHAR},
+      true_name = #{record.trueName,jdbcType=VARCHAR},
+      sex = #{record.sex,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      head_img = #{record.headImg,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hhit.bean.Member">
+    update tbl_member
+    <set>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=VARCHAR},
+      </if>
+      <if test="memberName != null">
+        member_name = #{memberName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPassword != null">
+        member_password = #{memberPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="trueName != null">
+        true_name = #{trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="headImg != null">
+        head_img = #{headImg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hhit.bean.Member">
+    update tbl_member
+    set member_id = #{memberId,jdbcType=VARCHAR},
+      member_name = #{memberName,jdbcType=VARCHAR},
+      member_password = #{memberPassword,jdbcType=VARCHAR},
+      true_name = #{trueName,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      head_img = #{headImg,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
